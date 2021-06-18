@@ -1,0 +1,23 @@
+# virtualenv
+env/
+
+# Python byte-compile code
+*.pyc
+__pycache__/
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Emacs
+.#*
+
+# Local History for Visual Studio Code
+.history/
+
+# Jupyter notebook checkpoints (anywhere in repository)
+.ipynb_checkpoints
