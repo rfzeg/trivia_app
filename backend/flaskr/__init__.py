@@ -11,15 +11,20 @@ QUESTIONS_PER_PAGE = 10
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
+  # allow cross-domain access to all the server routes which start with /api
+  cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
   setup_db(app)
-  
-  '''
-  @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
-  '''
 
-  '''
-  @TODO: Use the after_request decorator to set Access-Control-Allow
-  '''
+  # define CORS policy
+  @app.after_request
+  def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Headers', 'GET, POST, PATCH, DELETE, OPTIONS')
+    return response
+
+  @app.route('/')
+  def app_root():
+    return "<h1>Trivia app root</h1>"
 
   '''
   @TODO: 
