@@ -26,11 +26,21 @@ def create_app(test_config=None):
   def app_root():
     return "<h1>Trivia app root</h1>"
 
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests 
-  for all available categories.
-  '''
+  # endpoint to handle GET requests for all available categories
+  @app.route('/api/v1.0/categories', methods=['GET'])
+  def categories():
+    categories_query = Category.query.all()
+
+    categories_list = [category.format() for category in categories_query]
+
+    categories_dict = {}
+    for cat in categories_list:
+        categories_dict[cat['id']] = cat['type']
+
+    return jsonify({
+        'success': True,
+        'categories': categories_dict
+    })
 
 
   '''
