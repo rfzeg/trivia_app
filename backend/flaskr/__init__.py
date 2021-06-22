@@ -8,6 +8,8 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+current_category = 'History'
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
@@ -45,16 +47,32 @@ def create_app(test_config=None):
 
   '''
   @TODO: 
-  Create an endpoint to handle GET requests for questions, 
-  including pagination (every 10 questions). 
-  This endpoint should return a list of questions, 
-  number of total questions, current category, categories. 
+  Include pagination (every 10 questions).
 
   TEST: At this point, when you start the application
   you should see questions and categories generated,
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+
+  @app.route('/api/v1.0/questions', methods=['GET'])
+  def get_questions():
+    questions = Question.query.all()
+    formatted_questions = [question.format() for question in questions]
+
+    categories_query = Category.query.all()
+    categories_list = [category.format() for category in categories_query]
+    categories_dict = {}
+    for cat in categories_list:
+        categories_dict[cat['id']] = cat['type']
+
+    # response body
+    return jsonify({
+        'success': True,
+        'questions': formatted_questions,
+        'currentCategory': current_category,
+        'categories': categories_dict
+        })
 
   '''
   @TODO: 
