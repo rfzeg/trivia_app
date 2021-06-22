@@ -68,6 +68,9 @@ def create_app(test_config=None):
     questions_query = Question.query.order_by(Question.id).all()
     current_questions = paginate_questions(request, questions_query)
 
+    if len(current_questions) == 0:
+      abort(404)
+
     categories_query = Category.query.all()
     categories_list = [category.format() for category in categories_query]
     categories_dict = {}
@@ -82,6 +85,14 @@ def create_app(test_config=None):
         'currentCategory': current_category,
         'categories': categories_dict
         })
+
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+      "success": False,
+      "error": 404,
+      "message": "resource not found"
+      }), 404
 
   '''
   @TODO: 
