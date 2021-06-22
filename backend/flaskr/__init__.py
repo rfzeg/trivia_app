@@ -52,17 +52,7 @@ def create_app(test_config=None):
         'categories': categories_dict
     })
 
-
-  '''
-  @TODO: 
-  Include pagination (every 10 questions).
-
-  TEST: At this point, when you start the application
-  you should see questions and categories generated,
-  ten questions per page and pagination at the bottom of the screen for three pages.
-  Clicking on the page numbers should update the questions. 
-  '''
-
+  # endpoint to handle GET requests for paginated questions
   @app.route('/api/v1.0/questions', methods=['GET'])
   def get_questions():
     questions_query = Question.query.order_by(Question.id).all()
