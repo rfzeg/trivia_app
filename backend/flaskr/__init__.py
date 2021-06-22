@@ -10,6 +10,14 @@ QUESTIONS_PER_PAGE = 10
 
 current_category = 'History'
 
+def paginate_questions(request, selection):
+  page = request.args.get('page', 1, type=int)
+  start =  (page - 1) * QUESTIONS_PER_PAGE
+  end = start + QUESTIONS_PER_PAGE
+  formatted_questions = [question.format() for question in selection]
+  current_questions = formatted_questions[start:end]
+  return current_questions
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
@@ -57,11 +65,8 @@ def create_app(test_config=None):
 
   @app.route('/api/v1.0/questions', methods=['GET'])
   def get_questions():
-    page = request.args.get('page', 1, type=int)
-    start = (page - 1) * 10
-    end = start + 10
-    questions = Question.query.all()
-    formatted_questions = [question.format() for question in questions]
+    questions_query = Question.query.order_by(Question.id).all()
+    current_questions = paginate_questions(request, questions_query)
 
     categories_query = Category.query.all()
     categories_list = [category.format() for category in categories_query]
@@ -72,8 +77,8 @@ def create_app(test_config=None):
     # response body
     return jsonify({
         'success': True,
-        'questions': formatted_questions[start:end],
-        'total_questions': len(formatted_questions),
+        'questions': current_questions,
+        'total_questions': len(questions_query),
         'currentCategory': current_category,
         'categories': categories_dict
         })
