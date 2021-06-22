@@ -57,6 +57,9 @@ def create_app(test_config=None):
 
   @app.route('/api/v1.0/questions', methods=['GET'])
   def get_questions():
+    page = request.args.get('page', 1, type=int)
+    start = (page - 1) * 10
+    end = start + 10
     questions = Question.query.all()
     formatted_questions = [question.format() for question in questions]
 
@@ -69,7 +72,8 @@ def create_app(test_config=None):
     # response body
     return jsonify({
         'success': True,
-        'questions': formatted_questions,
+        'questions': formatted_questions[start:end],
+        'total_questions': len(formatted_questions),
         'currentCategory': current_category,
         'categories': categories_dict
         })
