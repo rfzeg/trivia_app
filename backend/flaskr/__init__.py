@@ -121,16 +121,27 @@ def create_app(test_config=None):
       else:
         return jsonify({"success": True})
 
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
+  # endpoint to retrieve questions based on a search term
+  @app.route('/api/v1.0/questions/search', methods=['POST'])
+  def search_question():
+    search_request = request.get_json()
+    search_term = search_request["searchTerm"]
+    # Case-insensitive search on questions with partial string search
+    query_term = "%%"+search_term+"%%"
+    query_result = db.session.query(Question).filter(Question.question.ilike(query_term)).all()
+    total_questions = len(query_result)
+    if total_questions == 0:
+      abort(404)
 
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
-  '''
+    response = {"questions": [], "totalQuestions": total_questions, "currentCategory": current_category}
+    for question in query_result:
+      response["questions"].append({'id': question.id,
+                                    'question': question.question,
+                                    'answer': question.answer,
+                                    'difficulty': question.difficulty,
+                                    'category': question.category
+                                   })
+    return jsonify(response)
 
   # endpoint to handle GET requests to get questions based on category
   @app.route('/api/v1.0/categories/<int:category_id>/questions', methods=['GET'])

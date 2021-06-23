@@ -106,6 +106,24 @@ class TriviaAppTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
 
+    def test_search_question_w_existing_string(self):
+        """Performs a simulated POST request to '/api/v1.0/questions/search'"""
+        res = self.client().post('/api/v1.0/questions/search', json={"searchTerm":"what"})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['totalQuestions'])
+        self.assertTrue(data['currentCategory'])
+        self.assertTrue(len(data['questions']))
+
+    def test_search_question_w_nonexisting_string(self):
+        """Performs a simulated POST request to '/api/v1.0/questions/search'"""
+        res = self.client().post('/api/v1.0/questions/search', json={"searchTerm":"xgjtddk"})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
