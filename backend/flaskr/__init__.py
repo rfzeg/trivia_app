@@ -134,20 +134,23 @@ def create_app(test_config=None):
 
   # endpoint to handle GET requests to get questions based on category
   @app.route('/api/v1.0/categories/<int:category_id>/questions', methods=['GET'])
-  def questions_by_category(category_id):   
-    question_query = Question.query.filter(Question.category==category_id)
-    total_questions = question_query.count()
-    category_query = Category.query.get(category_id)
-    category_string = category_query.type
-    response = {"questions": [], "totalQuestions": total_questions, "currentCategory": category_string}
-    for question in question_query:
-      response["questions"].append({'id': question.id,
-                                    'question': question.question,
-                                    'answer': question.answer,
-                                    'difficulty': question.difficulty,
-                                    'category': question.category
-                                    })
-    return jsonify(response)
+  def questions_by_category(category_id):
+    try:
+      question_query = Question.query.filter(Question.category==category_id)
+      total_questions = question_query.count()
+      category_query = Category.query.get(category_id)
+      category_string = category_query.type
+      response = {"questions": [], "totalQuestions": total_questions, "currentCategory": category_string}
+      for question in question_query:
+        response["questions"].append({'id': question.id,
+                                      'question': question.question,
+                                      'answer': question.answer,
+                                      'difficulty': question.difficulty,
+                                      'category': question.category
+                                      })
+      return jsonify(response)
+    except:
+      abort(404)
 
   '''
   @TODO: 

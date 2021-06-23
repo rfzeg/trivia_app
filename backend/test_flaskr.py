@@ -88,6 +88,24 @@ class TriviaAppTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'], True)
 
+    def test_questions_based_on_existing_category(self):
+        """Performs a simulated GET request to '/api/v1.0/categories/1/questions'"""
+        res = self.client().get('/api/v1.0/categories/1/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['totalQuestions'])
+        self.assertTrue(data['currentCategory'])
+        self.assertTrue(len(data['questions']))
+
+    def test_questions_based_on_nonexisting_category(self):
+        """Performs a simulated GET request to '/api/v1.0/categories/1000/questions'"""
+        res = self.client().get('/api/v1.0/categories/1000/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
