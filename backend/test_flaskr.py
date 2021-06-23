@@ -75,6 +75,19 @@ class TriviaAppTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
 
+    def test_post_new_question(self):
+        """Performs a simulated POST request to '/api/v1.0/questions'"""
+        new_question = {'question': 'Heres a new question string',
+                        'answer': 'Heres the answer string',
+                        'difficulty': 1,
+                        'category': 2
+                       }
+        res = self.client().post('/api/v1.0/questions', json=new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'], True)
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
