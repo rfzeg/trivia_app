@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import db, setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
@@ -84,13 +84,23 @@ def create_app(test_config=None):
       "message": "resource not found"
       }), 404
 
-  '''
-  @TODO: 
-  Create an endpoint to DELETE question using a question ID. 
-
-  TEST: When you click the trash icon next to a question, the question will be removed.
-  This removal will persist in the database and when you refresh the page. 
-  '''
+  # endpoint to handle DELETE requests using a question ID
+  @app.route('/api/v1.0/questions/<int:question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+    error = False
+    try:
+        question = Question.query.get(question_id)
+        db.session.delete(question)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+    finally:
+        db.session.close()
+        if error:
+          abort(404)
+        else:
+          return jsonify({"success": True})
 
   '''
   @TODO: 

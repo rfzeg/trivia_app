@@ -59,6 +59,22 @@ class TriviaAppTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'resource not found')
         self.assertTrue(res.content_type == 'application/json')
 
+    def test_delete_existing_question(self):
+        """Performs a simulated DELETE request to '/questions/2'"""
+        res = self.client().delete('/api/v1.0/questions/2')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'], True)
+    
+    def test_delete_nonexisting_question(self):
+        """Performs a simulated DELETE request to '/api/v1.0/questions/10000'"""
+        res = self.client().delete('/api/v1.0/questions/10000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
