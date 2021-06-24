@@ -76,14 +76,6 @@ def create_app(test_config=None):
         'categories': categories_dict
         })
 
-  @app.errorhandler(404)
-  def not_found(error):
-    return jsonify({
-      "success": False,
-      "error": 404,
-      "message": "resource not found"
-      }), 404
-
   # endpoint to handle DELETE requests using a question ID
   @app.route('/api/v1.0/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
@@ -105,10 +97,13 @@ def create_app(test_config=None):
   # endpoint to handle POST requests using a question ID
   @app.route('/api/v1.0/questions', methods=['POST'])
   def add_question():
-    question_request = request.get_json()
+    try:
+      question_request = request.get_json()
+      question_record = Question(**question_request)
+    except:
+      abort(400)
     error = False
     try:
-      question_record = Question(**question_request)
       db.session.add(question_record)
       db.session.commit()
     except:
@@ -117,7 +112,7 @@ def create_app(test_config=None):
     finally:
       db.session.close()
       if error:
-        abort(404)
+        abort(422)
       else:
         return jsonify({"success": True})
 
@@ -166,9 +161,12 @@ def create_app(test_config=None):
   # endpoint to handle POST requests to play the quiz
   @app.route('/api/v1.0/quizzes', methods=['POST'])
   def play_quiz():
-    quizzes_request = request.get_json()
-    previous_questions = quizzes_request['previous_questions']
-    current_category_string = quizzes_request['quiz_category']
+    try:
+      quizzes_request = request.get_json()
+      previous_questions = quizzes_request['previous_questions']
+      current_category_string = quizzes_request['quiz_category']
+    except:
+      abort(400)
     try:
       # get category query object based of category string
       category = db.session.query(Category).filter_by(type=current_category_string).first()
@@ -185,11 +183,29 @@ def create_app(test_config=None):
     except:
       abort(404)
 
-  '''
-  @TODO: 
-  Create error handlers for all expected errors 
-  including 404 and 422. 
-  '''
+  @app.errorhandler(400)
+  def bad_request(error):
+    return jsonify({
+      "success": False,
+      "error": 400,
+      "message": "Bad Request"
+      }), 400
+      
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+      "success": False,
+      "error": 404,
+      "message": "resource not found"
+      }), 404
+
+  @app.errorhandler(422)
+  def unprocessable(error):
+      return jsonify({
+          "success": False,
+          "error": 422,
+          "message": "unprocessable"
+          }), 422
   
   return app
 

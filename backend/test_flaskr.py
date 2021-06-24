@@ -88,6 +88,20 @@ class TriviaAppTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'], True)
 
+    def test_post_new_question_bad_request(self):
+        """Performs a simulated bad POST request to '/api/v1.0/questions'"""
+        new_question = {'q': 'Heres a new question string',
+                        'a': 'Heres the answer string',
+                        'diff': 1,
+                        'cat': 2
+                       }
+        res = self.client().post('/api/v1.0/questions', json=new_question)
+        data = json.loads(res.data)
+
+        self.assertTrue(res.status_code, 400)
+        self.assertTrue(data['message'])
+        self.assertEqual(data['success'], False)
+
     def test_questions_based_on_existing_category(self):
         """Performs a simulated GET request to '/api/v1.0/categories/1/questions'"""
         res = self.client().get('/api/v1.0/categories/1/questions')
@@ -132,6 +146,16 @@ class TriviaAppTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(data['question'])
+
+    def test_bad_request_on_play_quiz(self):
+        """Performs a simulated bad POST request to '/api/v1.0/quizzes'"""
+        bad_request_body = {'previous': [16, 17], 'category': 'Art' }
+        response = self.client().post('/api/v1.0/quizzes', json=bad_request_body)
+        data = json.loads(response.data)
+
+        self.assertTrue(response.status_code, 400)
+        self.assertTrue(data['message'])
+        self.assertEqual(data['success'], False)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
