@@ -162,21 +162,27 @@ def create_app(test_config=None):
     try:
       quizzes_request = request.get_json()
       previous_questions = quizzes_request['previous_questions']
-      current_category_string = quizzes_request['quiz_category']
+      current_category_id = quizzes_request['quiz_category']['id']
     except:
       abort(400)
     try:
-      # get category query object based of category string
-      category = db.session.query(Category).filter_by(type=current_category_string).first()
-      # get all questions id's whitin the given category
-      questions_in_category = db.session.query(Question.id).filter(Question.category==category.id).all()
+      # get questions based off category
+      if(current_category_id == 0):
+        questions_in_category = db.session.query(Question.id).all()
+      else:
+        questions_in_category = db.session.query(Question.id).filter(Question.category == current_category_id).all()
+
       flat_questions_in_category = [j for sub in questions_in_category for j in sub]
       # filter out previous questions
       filtered_questions_in_category = [question for question in flat_questions_in_category if question not in previous_questions]
-      # get a new random question
-      new_question_id = random.choice(filtered_questions_in_category)
-      question = Question.query.get(new_question_id)
-      response = {"question": question.format()}
+      # verify if there are questions left
+      if(len(filtered_questions_in_category) == 0):
+        response = {"question": None}
+      else:
+        # get a new random question
+        new_question_id = random.choice(filtered_questions_in_category)
+        question = Question.query.get(new_question_id)
+        response = {"question": question.format()}
       return jsonify(response)
     except:
       abort(404)
