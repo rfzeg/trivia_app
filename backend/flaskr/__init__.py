@@ -8,8 +8,6 @@ from models import db, setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
-current_category = 'History'
-
 def paginate_questions(request, selection):
   page = request.args.get('page', 1, type=int)
   start =  (page - 1) * QUESTIONS_PER_PAGE
@@ -72,7 +70,7 @@ def create_app(test_config=None):
         'success': True,
         'questions': current_questions,
         'total_questions': len(questions_query),
-        'currentCategory': current_category,
+        'current_category': None,
         'categories': categories_dict
         })
 
@@ -128,7 +126,7 @@ def create_app(test_config=None):
     if total_questions == 0:
       abort(404)
 
-    response = {"questions": [], "totalQuestions": total_questions, "currentCategory": current_category}
+    response = {"questions": [], "totalQuestions": total_questions, "currentCategory": None}
     for question in query_result:
       response["questions"].append({'id': question.id,
                                     'question': question.question,
@@ -146,7 +144,7 @@ def create_app(test_config=None):
       total_questions = question_query.count()
       category_query = Category.query.get(category_id)
       category_string = category_query.type
-      response = {"questions": [], "totalQuestions": total_questions, "currentCategory": category_string}
+      response = {"questions": [], "total_questions": total_questions, "current_category": category_string}
       for question in question_query:
         response["questions"].append({'id': question.id,
                                       'question': question.question,
