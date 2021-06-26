@@ -108,8 +108,8 @@ class TriviaAppTestCase(unittest.TestCase):
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
-        self.assertTrue(data['totalQuestions'])
-        self.assertTrue(data['currentCategory'])
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(data['current_category'])
         self.assertTrue(len(data['questions']))
 
     def test_questions_based_on_nonexisting_category(self):
@@ -120,17 +120,16 @@ class TriviaAppTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
 
-    def test_search_question_w_existing_string(self):
+    def test_search_question_w_existing_search_term(self):
         """Performs a simulated POST request to '/api/v1.0/questions/search'"""
         res = self.client().post('/api/v1.0/questions/search', json={"searchTerm":"what"})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
-        self.assertTrue(data['totalQuestions'])
-        self.assertTrue(data['currentCategory'])
+        self.assertTrue(data['total_questions'])
         self.assertTrue(len(data['questions']))
 
-    def test_search_question_w_nonexisting_string(self):
+    def test_search_question_w_nonexisting_search_term(self):
         """Performs a simulated POST request to '/api/v1.0/questions/search'"""
         res = self.client().post('/api/v1.0/questions/search', json={"searchTerm":"xgjtddk"})
         data = json.loads(res.data)
@@ -140,7 +139,7 @@ class TriviaAppTestCase(unittest.TestCase):
 
     def test_play_quiz(self):
         """Performs a simulated POST request to '/api/v1.0/quizzes'"""
-        request_body = {"previous_questions": [16, 17], "quiz_category": "Art" }
+        request_body = {"previous_questions": [16, 17], "quiz_category": {"type": "Science", "id": "1"}}
         response = self.client().post('/api/v1.0/quizzes', json=request_body)
         data = json.loads(response.data)
 

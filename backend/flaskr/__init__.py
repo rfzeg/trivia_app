@@ -126,7 +126,7 @@ def create_app(test_config=None):
     if total_questions == 0:
       abort(404)
 
-    response = {"questions": [], "totalQuestions": total_questions, "currentCategory": None}
+    response = {"questions": [], "total_questions": total_questions, "current_category": None}
     for question in query_result:
       response["questions"].append({'id': question.id,
                                     'question': question.question,
